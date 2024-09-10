@@ -1,0 +1,880 @@
+GAS LISTING /tmp/ccnkn6oc.s 			page 1
+
+
+   1              		.file	"MemoryAllocator.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN15MemoryAllocator9mem_allocEm
+   9              	_ZN15MemoryAllocator9mem_allocEm:
+  10              	.LFB0:
+  11              		.file 1 "src/MemoryAllocator.cpp"
+   1:src/MemoryAllocator.cpp **** //
+   2:src/MemoryAllocator.cpp **** // Created by os on 5/16/24.
+   3:src/MemoryAllocator.cpp **** //
+   4:src/MemoryAllocator.cpp **** 
+   5:src/MemoryAllocator.cpp **** #include "../h/MemoryAllocator.h"
+   6:src/MemoryAllocator.cpp **** 
+   7:src/MemoryAllocator.cpp **** #include "../lib/mem.h"
+   8:src/MemoryAllocator.cpp **** 
+   9:src/MemoryAllocator.cpp **** MemMeta* MemoryAllocator::firstFree = nullptr;
+  10:src/MemoryAllocator.cpp **** MemMeta* MemoryAllocator::firstUsed = nullptr;
+  11:src/MemoryAllocator.cpp **** 
+  12:src/MemoryAllocator.cpp **** void *MemoryAllocator::mem_alloc(size_t size) {
+  12              		.loc 1 12 47
+  13              		.cfi_startproc
+  14              	.LVL0:
+  15 0000 130101FF 		addi	sp,sp,-16
+  16              		.cfi_def_cfa_offset 16
+  17 0004 23348100 		sd	s0,8(sp)
+  18              		.cfi_offset 8, -8
+  19 0008 13040101 		addi	s0,sp,16
+  20              		.cfi_def_cfa 8, 0
+  13:src/MemoryAllocator.cpp ****     MemMeta* curr;
+  21              		.loc 1 13 5
+  14:src/MemoryAllocator.cpp ****     MemMeta* curr2;
+  22              		.loc 1 14 5
+  15:src/MemoryAllocator.cpp ****     MemMeta* newUsed = nullptr;
+  23              		.loc 1 15 5
+  24              	.LVL1:
+  16:src/MemoryAllocator.cpp ****     MemMeta* newFree = nullptr;
+  25              		.loc 1 16 5
+  17:src/MemoryAllocator.cpp ****     size_t actualSize;
+  26              		.loc 1 17 5
+  18:src/MemoryAllocator.cpp **** 
+  19:src/MemoryAllocator.cpp **** 
+  20:src/MemoryAllocator.cpp ****     // inicijalizacija pri prvom trazenju memorije posle boot-a
+  21:src/MemoryAllocator.cpp ****     if (firstFree == nullptr) {
+  27              		.loc 1 21 5
+  28              		.loc 1 21 19 is_stmt 0
+  29 000c 97070000 		ld	a5,.LANCHOR0
+  29      83B70700 
+  30              		.loc 1 21 5
+  31 0014 63820704 		beqz	a5,.L16
+  32              	.L2:
+  22:src/MemoryAllocator.cpp ****         firstFree = (MemMeta*)HEAP_START_ADDR;
+  23:src/MemoryAllocator.cpp ****         firstFree->size = ((((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR) - sizeof(MemMeta)) / 
+  24:src/MemoryAllocator.cpp ****         firstFree->next = nullptr;
+  25:src/MemoryAllocator.cpp ****     }
+GAS LISTING /tmp/ccnkn6oc.s 			page 2
+
+
+  26:src/MemoryAllocator.cpp **** 
+  27:src/MemoryAllocator.cpp ****     curr = firstFree;
+  33              		.loc 1 27 5 is_stmt 1
+  34              		.loc 1 27 10 is_stmt 0
+  35 0018 17060000 		ld	a2,.LANCHOR0
+  35      03360600 
+  36              	.LVL2:
+  28:src/MemoryAllocator.cpp ****     actualSize = size + (size % MEM_BLOCK_SIZE ? 1 : 0) * (MEM_BLOCK_SIZE - size % MEM_BLOCK_SIZE);
+  37              		.loc 1 28 5 is_stmt 1
+  38              		.loc 1 28 31 is_stmt 0
+  39 0020 9377F503 		andi	a5,a0,63
+  40              		.loc 1 28 48
+  41 0024 638A0706 		beqz	a5,.L13
+  42 0028 93061000 		li	a3,1
+  43              	.L3:
+  44              		.loc 1 28 75 discriminator 4
+  45 002c 13070004 		li	a4,64
+  46 0030 3307F740 		sub	a4,a4,a5
+  47              		.loc 1 28 57 discriminator 4
+  48 0034 3307D702 		mul	a4,a4,a3
+  49              		.loc 1 28 16 discriminator 4
+  50 0038 3307A700 		add	a4,a4,a0
+  51              	.LVL3:
+  27:src/MemoryAllocator.cpp ****     actualSize = size + (size % MEM_BLOCK_SIZE ? 1 : 0) * (MEM_BLOCK_SIZE - size % MEM_BLOCK_SIZE);
+  52              		.loc 1 27 10 discriminator 4
+  53 003c 13050600 		mv	a0,a2
+  54              	.LVL4:
+  55              	.L5:
+  29:src/MemoryAllocator.cpp **** 
+  30:src/MemoryAllocator.cpp ****     while (curr != nullptr) {
+  56              		.loc 1 30 5 is_stmt 1
+  57              		.loc 1 30 17
+  58 0040 63000506 		beqz	a0,.L4
+  31:src/MemoryAllocator.cpp ****         if (curr->size > (actualSize + sizeof(MemMeta))) break; //nasli smo dovoljno veliki blok. j
+  59              		.loc 1 31 9
+  60              		.loc 1 31 19 is_stmt 0
+  61 0044 83360500 		ld	a3,0(a0)
+  62              		.loc 1 31 38
+  63 0048 93070701 		addi	a5,a4,16
+  64              		.loc 1 31 9
+  65 004c 63EAD704 		bgtu	a3,a5,.L4
+  32:src/MemoryAllocator.cpp ****         curr = (MemMeta*)curr->next;
+  66              		.loc 1 32 9 is_stmt 1
+  67              		.loc 1 32 14 is_stmt 0
+  68 0050 03358500 		ld	a0,8(a0)
+  69              	.LVL5:
+  30:src/MemoryAllocator.cpp ****         if (curr->size > (actualSize + sizeof(MemMeta))) break; //nasli smo dovoljno veliki blok. j
+  70              		.loc 1 30 5
+  71 0054 6FF0DFFE 		j	.L5
+  72              	.LVL6:
+  73              	.L16:
+  22:src/MemoryAllocator.cpp ****         firstFree->size = ((((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR) - sizeof(MemMeta)) / 
+  74              		.loc 1 22 9 is_stmt 1
+  22:src/MemoryAllocator.cpp ****         firstFree->size = ((((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR) - sizeof(MemMeta)) / 
+  75              		.loc 1 22 19 is_stmt 0
+  76 0058 97070000 		la	a5,HEAP_START_ADDR
+  76      83B70700 
+GAS LISTING /tmp/ccnkn6oc.s 			page 3
+
+
+  77 0060 03B70700 		ld	a4,0(a5)
+  78 0064 97060000 		lla	a3,.LANCHOR0
+  78      93860600 
+  79 006c 23B0E600 		sd	a4,0(a3)
+  23:src/MemoryAllocator.cpp ****         firstFree->next = nullptr;
+  80              		.loc 1 23 9 is_stmt 1
+  23:src/MemoryAllocator.cpp ****         firstFree->next = nullptr;
+  81              		.loc 1 23 52 is_stmt 0
+  82 0070 97070000 		la	a5,HEAP_END_ADDR
+  82      83B70700 
+  83 0078 83B70700 		ld	a5,0(a5)
+  84 007c B387E740 		sub	a5,a5,a4
+  23:src/MemoryAllocator.cpp ****         firstFree->next = nullptr;
+  85              		.loc 1 23 79
+  86 0080 938707FF 		addi	a5,a5,-16
+  23:src/MemoryAllocator.cpp ****         firstFree->next = nullptr;
+  87              		.loc 1 23 116
+  88 0084 93F707FC 		andi	a5,a5,-64
+  23:src/MemoryAllocator.cpp ****         firstFree->next = nullptr;
+  89              		.loc 1 23 25
+  90 0088 2330F700 		sd	a5,0(a4)
+  24:src/MemoryAllocator.cpp ****     }
+  91              		.loc 1 24 9 is_stmt 1
+  24:src/MemoryAllocator.cpp ****     }
+  92              		.loc 1 24 20 is_stmt 0
+  93 008c 83B70600 		ld	a5,0(a3)
+  24:src/MemoryAllocator.cpp ****     }
+  94              		.loc 1 24 25
+  95 0090 23B40700 		sd	zero,8(a5)
+  96 0094 6FF05FF8 		j	.L2
+  97              	.LVL7:
+  98              	.L13:
+  28:src/MemoryAllocator.cpp **** 
+  99              		.loc 1 28 48
+ 100 0098 93860700 		mv	a3,a5
+ 101 009c 6FF01FF9 		j	.L3
+ 102              	.LVL8:
+ 103              	.L4:
+  33:src/MemoryAllocator.cpp ****     }
+  34:src/MemoryAllocator.cpp **** 
+  35:src/MemoryAllocator.cpp ****     if (curr == nullptr) return nullptr; //potencijalna nadogradnja: attemptDefrag();
+ 104              		.loc 1 35 5 is_stmt 1
+ 105 00a0 63080506 		beqz	a0,.L1
+  36:src/MemoryAllocator.cpp **** 
+  37:src/MemoryAllocator.cpp **** 
+  38:src/MemoryAllocator.cpp ****     for(curr2 = firstFree; curr != firstFree && curr2->next != curr && curr2->next != 0; curr2 = (M
+ 106              		.loc 1 38 15 is_stmt 0
+ 107 00a4 93060600 		mv	a3,a2
+ 108 00a8 6F008000 		j	.L8
+ 109              	.LVL9:
+ 110              	.L14:
+ 111              		.loc 1 38 96
+ 112 00ac 93860700 		mv	a3,a5
+ 113              	.LVL10:
+ 114              	.L8:
+ 115              		.loc 1 38 69 is_stmt 1 discriminator 5
+ 116 00b0 6308C500 		beq	a0,a2,.L7
+GAS LISTING /tmp/ccnkn6oc.s 			page 4
+
+
+ 117              		.loc 1 38 56 is_stmt 0 discriminator 2
+ 118 00b4 83B78600 		ld	a5,8(a3)
+ 119              		.loc 1 38 46 discriminator 2
+ 120 00b8 6384A700 		beq	a5,a0,.L7
+ 121              		.loc 1 38 69 discriminator 3
+ 122 00bc E39807FE 		bnez	a5,.L14
+ 123              	.L7:
+  39:src/MemoryAllocator.cpp ****     newFree = (MemMeta*)((size_t)curr + actualSize + sizeof(MemMeta));
+ 124              		.loc 1 39 5 is_stmt 1
+ 125              		.loc 1 39 39 is_stmt 0
+ 126 00c0 B305E500 		add	a1,a0,a4
+ 127              		.loc 1 39 52
+ 128 00c4 13880501 		addi	a6,a1,16
+ 129              	.LVL11:
+  40:src/MemoryAllocator.cpp ****     if (curr2 != firstFree) curr2->next = newFree;
+ 130              		.loc 1 40 5 is_stmt 1
+ 131 00c8 638AC604 		beq	a3,a2,.L9
+ 132              		.loc 1 40 29 discriminator 1
+ 133              		.loc 1 40 41 is_stmt 0 discriminator 1
+ 134 00cc 23B40601 		sd	a6,8(a3)
+ 135              	.L10:
+  41:src/MemoryAllocator.cpp ****     else firstFree = newFree;
+  42:src/MemoryAllocator.cpp ****     newFree->size = curr->size - actualSize - sizeof(MemMeta);
+ 136              		.loc 1 42 5 is_stmt 1
+ 137              		.loc 1 42 27 is_stmt 0
+ 138 00d0 83370500 		ld	a5,0(a0)
+ 139              		.loc 1 42 32
+ 140 00d4 B387E740 		sub	a5,a5,a4
+ 141              		.loc 1 42 45
+ 142 00d8 938707FF 		addi	a5,a5,-16
+ 143              		.loc 1 42 19
+ 144 00dc 23B8F500 		sd	a5,16(a1)
+  43:src/MemoryAllocator.cpp ****     newFree->next = curr->next;
+ 145              		.loc 1 43 5 is_stmt 1
+ 146              		.loc 1 43 27 is_stmt 0
+ 147 00e0 83378500 		ld	a5,8(a0)
+ 148              		.loc 1 43 19
+ 149 00e4 2334F800 		sd	a5,8(a6)
+  44:src/MemoryAllocator.cpp **** 
+  45:src/MemoryAllocator.cpp ****     if (firstUsed == nullptr) {
+ 150              		.loc 1 45 5 is_stmt 1
+ 151              		.loc 1 45 19 is_stmt 0
+ 152 00e8 97070000 		ld	a5,.LANCHOR0+8
+ 152      83B70700 
+ 153              		.loc 1 45 5
+ 154 00f0 638C0702 		beqz	a5,.L17
+ 155              	.L11:
+ 156              	.LVL12:
+  46:src/MemoryAllocator.cpp ****         firstUsed = curr;
+  47:src/MemoryAllocator.cpp ****         firstUsed->size = actualSize;
+  48:src/MemoryAllocator.cpp ****         firstUsed->next = nullptr;
+  49:src/MemoryAllocator.cpp ****         newUsed = firstUsed;
+  50:src/MemoryAllocator.cpp ****     }
+  51:src/MemoryAllocator.cpp **** 
+  52:src/MemoryAllocator.cpp ****     else {
+  53:src/MemoryAllocator.cpp ****         for (curr2 = firstUsed; curr2->next != nullptr; curr2 = (MemMeta*)curr2->next);
+ 157              		.loc 1 53 45 is_stmt 1 discriminator 3
+GAS LISTING /tmp/ccnkn6oc.s 			page 5
+
+
+ 158 00f4 93860700 		mv	a3,a5
+ 159              		.loc 1 53 40 is_stmt 0 discriminator 3
+ 160 00f8 83B78700 		ld	a5,8(a5)
+ 161              	.LVL13:
+ 162              		.loc 1 53 45 discriminator 3
+ 163 00fc E39C07FE 		bnez	a5,.L11
+  54:src/MemoryAllocator.cpp ****         newUsed = curr;
+ 164              		.loc 1 54 9 is_stmt 1
+ 165              	.LVL14:
+  55:src/MemoryAllocator.cpp ****         curr2->next = newUsed;
+ 166              		.loc 1 55 9
+ 167              		.loc 1 55 21 is_stmt 0
+ 168 0100 23B4A600 		sd	a0,8(a3)
+  56:src/MemoryAllocator.cpp ****         newUsed->size = actualSize;
+ 169              		.loc 1 56 9 is_stmt 1
+ 170              		.loc 1 56 23 is_stmt 0
+ 171 0104 2330E500 		sd	a4,0(a0)
+  57:src/MemoryAllocator.cpp ****         newUsed->next = nullptr;
+ 172              		.loc 1 57 9 is_stmt 1
+ 173              		.loc 1 57 23 is_stmt 0
+ 174 0108 23340500 		sd	zero,8(a0)
+ 175              	.LVL15:
+ 176              	.L12:
+  58:src/MemoryAllocator.cpp ****     }
+  59:src/MemoryAllocator.cpp **** 
+  60:src/MemoryAllocator.cpp ****     return (void*)((size_t)newUsed + sizeof(MemMeta));
+ 177              		.loc 1 60 5 is_stmt 1
+ 178              		.loc 1 60 36 is_stmt 0
+ 179 010c 13050501 		addi	a0,a0,16
+ 180              	.LVL16:
+ 181              	.L1:
+  61:src/MemoryAllocator.cpp **** }
+ 182              		.loc 1 61 1
+ 183 0110 03348100 		ld	s0,8(sp)
+ 184              		.cfi_remember_state
+ 185              		.cfi_restore 8
+ 186              		.cfi_def_cfa 2, 16
+ 187 0114 13010101 		addi	sp,sp,16
+ 188              		.cfi_def_cfa_offset 0
+ 189 0118 67800000 		jr	ra
+ 190              	.LVL17:
+ 191              	.L9:
+ 192              		.cfi_restore_state
+  41:src/MemoryAllocator.cpp ****     newFree->size = curr->size - actualSize - sizeof(MemMeta);
+ 193              		.loc 1 41 10 is_stmt 1
+  41:src/MemoryAllocator.cpp ****     newFree->size = curr->size - actualSize - sizeof(MemMeta);
+ 194              		.loc 1 41 20 is_stmt 0
+ 195 011c 97070000 		sd	a6,.LANCHOR0,a5
+ 195      23B00701 
+ 196 0124 6FF0DFFA 		j	.L10
+ 197              	.L17:
+  46:src/MemoryAllocator.cpp ****         firstUsed->size = actualSize;
+ 198              		.loc 1 46 9 is_stmt 1
+  46:src/MemoryAllocator.cpp ****         firstUsed->size = actualSize;
+ 199              		.loc 1 46 19 is_stmt 0
+ 200 0128 97070000 		lla	a5,.LANCHOR0
+ 200      93870700 
+GAS LISTING /tmp/ccnkn6oc.s 			page 6
+
+
+ 201 0130 23B4A700 		sd	a0,8(a5)
+  47:src/MemoryAllocator.cpp ****         firstUsed->next = nullptr;
+ 202              		.loc 1 47 9 is_stmt 1
+  47:src/MemoryAllocator.cpp ****         firstUsed->next = nullptr;
+ 203              		.loc 1 47 25 is_stmt 0
+ 204 0134 2330E500 		sd	a4,0(a0)
+  48:src/MemoryAllocator.cpp ****         newUsed = firstUsed;
+ 205              		.loc 1 48 9 is_stmt 1
+  48:src/MemoryAllocator.cpp ****         newUsed = firstUsed;
+ 206              		.loc 1 48 20 is_stmt 0
+ 207 0138 03B58700 		ld	a0,8(a5)
+ 208              	.LVL18:
+  48:src/MemoryAllocator.cpp ****         newUsed = firstUsed;
+ 209              		.loc 1 48 25
+ 210 013c 23340500 		sd	zero,8(a0)
+  49:src/MemoryAllocator.cpp ****     }
+ 211              		.loc 1 49 9 is_stmt 1
+ 212              	.LVL19:
+ 213 0140 6FF0DFFC 		j	.L12
+ 214              		.cfi_endproc
+ 215              	.LFE0:
+ 217              		.align	2
+ 218              		.globl	_ZN15MemoryAllocator8mem_freeEPv
+ 220              	_ZN15MemoryAllocator8mem_freeEPv:
+ 221              	.LFB1:
+  62:src/MemoryAllocator.cpp **** 
+  63:src/MemoryAllocator.cpp **** int MemoryAllocator::mem_free (void* ptr) {
+ 222              		.loc 1 63 43
+ 223              		.cfi_startproc
+ 224              	.LVL20:
+ 225 0144 130101FF 		addi	sp,sp,-16
+ 226              		.cfi_def_cfa_offset 16
+ 227 0148 23348100 		sd	s0,8(sp)
+ 228              		.cfi_offset 8, -8
+ 229 014c 13040101 		addi	s0,sp,16
+ 230              		.cfi_def_cfa 8, 0
+  64:src/MemoryAllocator.cpp ****     MemMeta* curr;
+ 231              		.loc 1 64 5
+  65:src/MemoryAllocator.cpp ****     void* tmp;
+ 232              		.loc 1 65 5
+  66:src/MemoryAllocator.cpp ****     MemMeta* newFree;
+ 233              		.loc 1 66 5
+  67:src/MemoryAllocator.cpp **** 
+  68:src/MemoryAllocator.cpp ****     //rastuci poredak
+  69:src/MemoryAllocator.cpp **** 
+  70:src/MemoryAllocator.cpp ****     if ((void*)((size_t)ptr - sizeof(MemMeta)) == firstUsed) {
+ 234              		.loc 1 70 5
+ 235              		.loc 1 70 29 is_stmt 0
+ 236 0150 130505FF 		addi	a0,a0,-16
+ 237              	.LVL21:
+ 238              		.loc 1 70 48
+ 239 0154 13070500 		mv	a4,a0
+ 240              		.loc 1 70 51
+ 241 0158 97070000 		ld	a5,.LANCHOR0+8
+ 241      83B70700 
+ 242              		.loc 1 70 5
+ 243 0160 630EF506 		beq	a0,a5,.L31
+GAS LISTING /tmp/ccnkn6oc.s 			page 7
+
+
+ 244              	.L19:
+ 245              	.LVL22:
+  71:src/MemoryAllocator.cpp ****         firstUsed = (MemMeta*)firstUsed->next;
+  72:src/MemoryAllocator.cpp ****     }
+  73:src/MemoryAllocator.cpp ****     else {
+  74:src/MemoryAllocator.cpp ****         for (curr = firstUsed; curr->next != (void*)((size_t)ptr - sizeof(MemMeta)) && curr->next !
+ 246              		.loc 1 74 85 is_stmt 1 discriminator 4
+ 247 0164 93860700 		mv	a3,a5
+ 248              		.loc 1 74 38 is_stmt 0 discriminator 4
+ 249 0168 83B78700 		ld	a5,8(a5)
+ 250              	.LVL23:
+ 251              		.loc 1 74 85 discriminator 4
+ 252 016c 6304F700 		beq	a4,a5,.L21
+ 253              		.loc 1 74 85 discriminator 2
+ 254 0170 E39A07FE 		bnez	a5,.L19
+ 255              	.L21:
+  75:src/MemoryAllocator.cpp ****         if (curr->next == nullptr) return -1;
+ 256              		.loc 1 75 9 is_stmt 1
+ 257 0174 638A0708 		beqz	a5,.L28
+  76:src/MemoryAllocator.cpp ****         curr->next = ((MemMeta*)((size_t)ptr - sizeof(MemMeta)))->next;
+ 258              		.loc 1 76 9
+ 259              		.loc 1 76 67 is_stmt 0
+ 260 0178 83378500 		ld	a5,8(a0)
+ 261              		.loc 1 76 20
+ 262 017c 23B4F600 		sd	a5,8(a3)
+ 263              	.LVL24:
+ 264              	.L20:
+  77:src/MemoryAllocator.cpp ****     } // vrsi prelancavanje USED liste
+  78:src/MemoryAllocator.cpp **** 
+  79:src/MemoryAllocator.cpp ****     newFree = (MemMeta*)((size_t)ptr - sizeof(MemMeta));
+ 265              		.loc 1 79 5 is_stmt 1
+  80:src/MemoryAllocator.cpp **** 
+  81:src/MemoryAllocator.cpp ****     if ((MemMeta*)((size_t)ptr - sizeof(MemMeta)) < firstFree) {
+ 266              		.loc 1 81 5
+ 267              		.loc 1 81 51 is_stmt 0
+ 268 0180 97070000 		ld	a5,.LANCHOR0
+ 268      83B70700 
+ 269              		.loc 1 81 5
+ 270 0188 6372F706 		bgeu	a4,a5,.L23
+  82:src/MemoryAllocator.cpp ****         newFree->next = firstFree;
+ 271              		.loc 1 82 9 is_stmt 1
+ 272              		.loc 1 82 23 is_stmt 0
+ 273 018c 2334F500 		sd	a5,8(a0)
+  83:src/MemoryAllocator.cpp ****         firstFree = newFree;
+ 274              		.loc 1 83 9 is_stmt 1
+ 275              		.loc 1 83 19 is_stmt 0
+ 276 0190 97070000 		sd	a0,.LANCHOR0,a5
+ 276      23B0A700 
+ 277              	.L24:
+  84:src/MemoryAllocator.cpp ****     }
+  85:src/MemoryAllocator.cpp **** 
+  86:src/MemoryAllocator.cpp ****     else {
+  87:src/MemoryAllocator.cpp ****         for (curr = firstFree; (size_t)curr->next < ((size_t)ptr - sizeof(MemMeta)) && curr->next !
+  88:src/MemoryAllocator.cpp ****         tmp = curr->next;
+  89:src/MemoryAllocator.cpp ****         curr->next = newFree;
+  90:src/MemoryAllocator.cpp ****         newFree->next = tmp;
+  91:src/MemoryAllocator.cpp **** 
+GAS LISTING /tmp/ccnkn6oc.s 			page 8
+
+
+  92:src/MemoryAllocator.cpp ****     }
+  93:src/MemoryAllocator.cpp **** 
+  94:src/MemoryAllocator.cpp ****     for (curr = firstFree; curr->next != nullptr; ){
+ 278              		.loc 1 94 5 is_stmt 1
+ 279              		.loc 1 94 15 is_stmt 0
+ 280 0198 97070000 		ld	a5,.LANCHOR0
+ 280      83B70700 
+ 281              	.LVL25:
+ 282              	.L26:
+ 283              		.loc 1 94 39 is_stmt 1 discriminator 1
+ 284 01a0 93860700 		mv	a3,a5
+ 285              		.loc 1 94 34 is_stmt 0 discriminator 1
+ 286 01a4 83B78700 		ld	a5,8(a5)
+ 287              	.LVL26:
+ 288              		.loc 1 94 39 discriminator 1
+ 289 01a8 63840706 		beqz	a5,.L29
+  95:src/MemoryAllocator.cpp ****         if ((size_t)curr + curr->size + sizeof(MemMeta) == (size_t)curr->next){
+ 290              		.loc 1 95 9 is_stmt 1
+ 291              		.loc 1 95 34 is_stmt 0
+ 292 01ac 03B60600 		ld	a2,0(a3)
+ 293              		.loc 1 95 26
+ 294 01b0 3387C600 		add	a4,a3,a2
+ 295              		.loc 1 95 39
+ 296 01b4 13070701 		addi	a4,a4,16
+ 297              		.loc 1 95 9
+ 298 01b8 E314F7FE 		bne	a4,a5,.L26
+  96:src/MemoryAllocator.cpp ****             curr->size = curr->size + ((MemMeta*)curr->next)->size + sizeof(MemMeta);
+ 299              		.loc 1 96 13 is_stmt 1
+ 300              		.loc 1 96 63 is_stmt 0
+ 301 01bc 03B70700 		ld	a4,0(a5)
+ 302              		.loc 1 96 37
+ 303 01c0 3306E600 		add	a2,a2,a4
+ 304              		.loc 1 96 68
+ 305 01c4 13060601 		addi	a2,a2,16
+ 306              		.loc 1 96 24
+ 307 01c8 23B0C600 		sd	a2,0(a3)
+  97:src/MemoryAllocator.cpp ****             curr->next = ((MemMeta*)curr->next)->next;
+ 308              		.loc 1 97 13 is_stmt 1
+ 309              		.loc 1 97 50 is_stmt 0
+ 310 01cc 83B78700 		ld	a5,8(a5)
+ 311              		.loc 1 97 24
+ 312 01d0 23B4F600 		sd	a5,8(a3)
+ 313 01d4 93870600 		mv	a5,a3
+ 314 01d8 6FF09FFC 		j	.L26
+ 315              	.LVL27:
+ 316              	.L31:
+  71:src/MemoryAllocator.cpp ****     }
+ 317              		.loc 1 71 9 is_stmt 1
+  71:src/MemoryAllocator.cpp ****     }
+ 318              		.loc 1 71 42 is_stmt 0
+ 319 01dc 83B78700 		ld	a5,8(a5)
+  71:src/MemoryAllocator.cpp ****     }
+ 320              		.loc 1 71 19
+ 321 01e0 97060000 		sd	a5,.LANCHOR0+8,a3
+ 321      23B0F600 
+ 322 01e8 6FF09FF9 		j	.L20
+ 323              	.LVL28:
+GAS LISTING /tmp/ccnkn6oc.s 			page 9
+
+
+ 324              	.L23:
+  87:src/MemoryAllocator.cpp ****         tmp = curr->next;
+ 325              		.loc 1 87 85 is_stmt 1 discriminator 4
+ 326 01ec 13870700 		mv	a4,a5
+  87:src/MemoryAllocator.cpp ****         tmp = curr->next;
+ 327              		.loc 1 87 46 is_stmt 0 discriminator 4
+ 328 01f0 83B78700 		ld	a5,8(a5)
+ 329              	.LVL29:
+  87:src/MemoryAllocator.cpp ****         tmp = curr->next;
+ 330              		.loc 1 87 85 discriminator 4
+ 331 01f4 63F4A700 		bleu	a0,a5,.L25
+  87:src/MemoryAllocator.cpp ****         tmp = curr->next;
+ 332              		.loc 1 87 85 discriminator 2
+ 333 01f8 E39A07FE 		bnez	a5,.L23
+ 334              	.L25:
+  88:src/MemoryAllocator.cpp ****         curr->next = newFree;
+ 335              		.loc 1 88 9 is_stmt 1
+ 336              	.LVL30:
+  89:src/MemoryAllocator.cpp ****         newFree->next = tmp;
+ 337              		.loc 1 89 9
+  89:src/MemoryAllocator.cpp ****         newFree->next = tmp;
+ 338              		.loc 1 89 20 is_stmt 0
+ 339 01fc 2334A700 		sd	a0,8(a4)
+  90:src/MemoryAllocator.cpp **** 
+ 340              		.loc 1 90 9 is_stmt 1
+  90:src/MemoryAllocator.cpp **** 
+ 341              		.loc 1 90 23 is_stmt 0
+ 342 0200 2334F500 		sd	a5,8(a0)
+ 343 0204 6FF05FF9 		j	.L24
+ 344              	.LVL31:
+ 345              	.L28:
+  75:src/MemoryAllocator.cpp ****         curr->next = ((MemMeta*)((size_t)ptr - sizeof(MemMeta)))->next;
+ 346              		.loc 1 75 44
+ 347 0208 1305F0FF 		li	a0,-1
+ 348              	.LVL32:
+ 349 020c 6F008000 		j	.L22
+ 350              	.LVL33:
+ 351              	.L29:
+  98:src/MemoryAllocator.cpp ****         }
+  99:src/MemoryAllocator.cpp ****         else {
+ 100:src/MemoryAllocator.cpp ****             curr = (MemMeta*)curr->next;
+ 101:src/MemoryAllocator.cpp ****         }
+ 102:src/MemoryAllocator.cpp ****     }
+ 103:src/MemoryAllocator.cpp **** 
+ 104:src/MemoryAllocator.cpp ****     return 0;
+ 352              		.loc 1 104 12
+ 353 0210 13050000 		li	a0,0
+ 354              	.LVL34:
+ 355              	.L22:
+ 105:src/MemoryAllocator.cpp **** }
+ 356              		.loc 1 105 1
+ 357 0214 03348100 		ld	s0,8(sp)
+ 358              		.cfi_restore 8
+ 359              		.cfi_def_cfa 2, 16
+ 360 0218 13010101 		addi	sp,sp,16
+ 361              		.cfi_def_cfa_offset 0
+ 362 021c 67800000 		jr	ra
+GAS LISTING /tmp/ccnkn6oc.s 			page 10
+
+
+ 363              		.cfi_endproc
+ 364              	.LFE1:
+ 366              		.globl	_ZN15MemoryAllocator9firstUsedE
+ 367              		.globl	_ZN15MemoryAllocator9firstFreeE
+ 368              		.bss
+ 369              		.align	3
+ 370              		.set	.LANCHOR0,. + 0
+ 373              	_ZN15MemoryAllocator9firstFreeE:
+ 374 0000 00000000 		.zero	8
+ 374      00000000 
+ 377              	_ZN15MemoryAllocator9firstUsedE:
+ 378 0008 00000000 		.zero	8
+ 378      00000000 
+ 379              		.text
+ 380              	.Letext0:
+ 381              		.file 2 "src/../h/../lib/hw.h"
+ 382              		.file 3 "src/../h/MemoryAllocator.h"
+GAS LISTING /tmp/ccnkn6oc.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 MemoryAllocator.cpp
+     /tmp/ccnkn6oc.s:9      .text:0000000000000000 _ZN15MemoryAllocator9mem_allocEm
+     /tmp/ccnkn6oc.s:13     .text:0000000000000000 .L0 
+     /tmp/ccnkn6oc.s:15     .text:0000000000000000 .L0 
+     /tmp/ccnkn6oc.s:16     .text:0000000000000004 .L0 
+     /tmp/ccnkn6oc.s:18     .text:0000000000000008 .L0 
+     /tmp/ccnkn6oc.s:20     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:22     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:23     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:25     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:26     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:27     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:28     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:29     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:31     .text:0000000000000014 .L0 
+     /tmp/ccnkn6oc.s:34     .text:0000000000000018 .L0 
+     /tmp/ccnkn6oc.s:35     .text:0000000000000018 .L0 
+     /tmp/ccnkn6oc.s:38     .text:0000000000000020 .L0 
+     /tmp/ccnkn6oc.s:39     .text:0000000000000020 .L0 
+     /tmp/ccnkn6oc.s:41     .text:0000000000000024 .L0 
+     /tmp/ccnkn6oc.s:45     .text:000000000000002c .L0 
+     /tmp/ccnkn6oc.s:48     .text:0000000000000034 .L0 
+     /tmp/ccnkn6oc.s:50     .text:0000000000000038 .L0 
+     /tmp/ccnkn6oc.s:53     .text:000000000000003c .L0 
+     /tmp/ccnkn6oc.s:57     .text:0000000000000040 .L0 
+     /tmp/ccnkn6oc.s:58     .text:0000000000000040 .L0 
+     /tmp/ccnkn6oc.s:60     .text:0000000000000044 .L0 
+     /tmp/ccnkn6oc.s:61     .text:0000000000000044 .L0 
+     /tmp/ccnkn6oc.s:63     .text:0000000000000048 .L0 
+     /tmp/ccnkn6oc.s:65     .text:000000000000004c .L0 
+     /tmp/ccnkn6oc.s:67     .text:0000000000000050 .L0 
+     /tmp/ccnkn6oc.s:68     .text:0000000000000050 .L0 
+     /tmp/ccnkn6oc.s:71     .text:0000000000000054 .L0 
+     /tmp/ccnkn6oc.s:75     .text:0000000000000058 .L0 
+     /tmp/ccnkn6oc.s:76     .text:0000000000000058 .L0 
+     /tmp/ccnkn6oc.s:81     .text:0000000000000070 .L0 
+     /tmp/ccnkn6oc.s:82     .text:0000000000000070 .L0 
+     /tmp/ccnkn6oc.s:86     .text:0000000000000080 .L0 
+     /tmp/ccnkn6oc.s:88     .text:0000000000000084 .L0 
+     /tmp/ccnkn6oc.s:90     .text:0000000000000088 .L0 
+     /tmp/ccnkn6oc.s:92     .text:000000000000008c .L0 
+     /tmp/ccnkn6oc.s:93     .text:000000000000008c .L0 
+     /tmp/ccnkn6oc.s:95     .text:0000000000000090 .L0 
+     /tmp/ccnkn6oc.s:100    .text:0000000000000098 .L0 
+     /tmp/ccnkn6oc.s:105    .text:00000000000000a0 .L0 
+     /tmp/ccnkn6oc.s:107    .text:00000000000000a4 .L0 
+     /tmp/ccnkn6oc.s:112    .text:00000000000000ac .L0 
+     /tmp/ccnkn6oc.s:116    .text:00000000000000b0 .L0 
+     /tmp/ccnkn6oc.s:118    .text:00000000000000b4 .L0 
+     /tmp/ccnkn6oc.s:120    .text:00000000000000b8 .L0 
+     /tmp/ccnkn6oc.s:122    .text:00000000000000bc .L0 
+     /tmp/ccnkn6oc.s:125    .text:00000000000000c0 .L0 
+     /tmp/ccnkn6oc.s:126    .text:00000000000000c0 .L0 
+     /tmp/ccnkn6oc.s:128    .text:00000000000000c4 .L0 
+     /tmp/ccnkn6oc.s:131    .text:00000000000000c8 .L0 
+     /tmp/ccnkn6oc.s:133    .text:00000000000000cc .L0 
+GAS LISTING /tmp/ccnkn6oc.s 			page 12
+
+
+     /tmp/ccnkn6oc.s:134    .text:00000000000000cc .L0 
+     /tmp/ccnkn6oc.s:137    .text:00000000000000d0 .L0 
+     /tmp/ccnkn6oc.s:138    .text:00000000000000d0 .L0 
+     /tmp/ccnkn6oc.s:140    .text:00000000000000d4 .L0 
+     /tmp/ccnkn6oc.s:142    .text:00000000000000d8 .L0 
+     /tmp/ccnkn6oc.s:144    .text:00000000000000dc .L0 
+     /tmp/ccnkn6oc.s:146    .text:00000000000000e0 .L0 
+     /tmp/ccnkn6oc.s:147    .text:00000000000000e0 .L0 
+     /tmp/ccnkn6oc.s:149    .text:00000000000000e4 .L0 
+     /tmp/ccnkn6oc.s:151    .text:00000000000000e8 .L0 
+     /tmp/ccnkn6oc.s:152    .text:00000000000000e8 .L0 
+     /tmp/ccnkn6oc.s:154    .text:00000000000000f0 .L0 
+     /tmp/ccnkn6oc.s:158    .text:00000000000000f4 .L0 
+     /tmp/ccnkn6oc.s:160    .text:00000000000000f8 .L0 
+     /tmp/ccnkn6oc.s:163    .text:00000000000000fc .L0 
+     /tmp/ccnkn6oc.s:166    .text:0000000000000100 .L0 
+     /tmp/ccnkn6oc.s:167    .text:0000000000000100 .L0 
+     /tmp/ccnkn6oc.s:168    .text:0000000000000100 .L0 
+     /tmp/ccnkn6oc.s:170    .text:0000000000000104 .L0 
+     /tmp/ccnkn6oc.s:171    .text:0000000000000104 .L0 
+     /tmp/ccnkn6oc.s:173    .text:0000000000000108 .L0 
+     /tmp/ccnkn6oc.s:174    .text:0000000000000108 .L0 
+     /tmp/ccnkn6oc.s:178    .text:000000000000010c .L0 
+     /tmp/ccnkn6oc.s:179    .text:000000000000010c .L0 
+     /tmp/ccnkn6oc.s:183    .text:0000000000000110 .L0 
+     /tmp/ccnkn6oc.s:184    .text:0000000000000114 .L0 
+     /tmp/ccnkn6oc.s:185    .text:0000000000000114 .L0 
+     /tmp/ccnkn6oc.s:186    .text:0000000000000114 .L0 
+     /tmp/ccnkn6oc.s:188    .text:0000000000000118 .L0 
+     /tmp/ccnkn6oc.s:192    .text:000000000000011c .L0 
+     /tmp/ccnkn6oc.s:194    .text:000000000000011c .L0 
+     /tmp/ccnkn6oc.s:195    .text:000000000000011c .L0 
+     /tmp/ccnkn6oc.s:199    .text:0000000000000128 .L0 
+     /tmp/ccnkn6oc.s:200    .text:0000000000000128 .L0 
+     /tmp/ccnkn6oc.s:203    .text:0000000000000134 .L0 
+     /tmp/ccnkn6oc.s:204    .text:0000000000000134 .L0 
+     /tmp/ccnkn6oc.s:206    .text:0000000000000138 .L0 
+     /tmp/ccnkn6oc.s:207    .text:0000000000000138 .L0 
+     /tmp/ccnkn6oc.s:210    .text:000000000000013c .L0 
+     /tmp/ccnkn6oc.s:213    .text:0000000000000140 .L0 
+     /tmp/ccnkn6oc.s:214    .text:0000000000000144 .L0 
+     /tmp/ccnkn6oc.s:220    .text:0000000000000144 _ZN15MemoryAllocator8mem_freeEPv
+     /tmp/ccnkn6oc.s:223    .text:0000000000000144 .L0 
+     /tmp/ccnkn6oc.s:225    .text:0000000000000144 .L0 
+     /tmp/ccnkn6oc.s:226    .text:0000000000000148 .L0 
+     /tmp/ccnkn6oc.s:228    .text:000000000000014c .L0 
+     /tmp/ccnkn6oc.s:230    .text:0000000000000150 .L0 
+     /tmp/ccnkn6oc.s:232    .text:0000000000000150 .L0 
+     /tmp/ccnkn6oc.s:233    .text:0000000000000150 .L0 
+     /tmp/ccnkn6oc.s:234    .text:0000000000000150 .L0 
+     /tmp/ccnkn6oc.s:235    .text:0000000000000150 .L0 
+     /tmp/ccnkn6oc.s:236    .text:0000000000000150 .L0 
+     /tmp/ccnkn6oc.s:239    .text:0000000000000154 .L0 
+     /tmp/ccnkn6oc.s:241    .text:0000000000000158 .L0 
+     /tmp/ccnkn6oc.s:243    .text:0000000000000160 .L0 
+     /tmp/ccnkn6oc.s:247    .text:0000000000000164 .L0 
+     /tmp/ccnkn6oc.s:249    .text:0000000000000168 .L0 
+GAS LISTING /tmp/ccnkn6oc.s 			page 13
+
+
+     /tmp/ccnkn6oc.s:252    .text:000000000000016c .L0 
+     /tmp/ccnkn6oc.s:254    .text:0000000000000170 .L0 
+     /tmp/ccnkn6oc.s:257    .text:0000000000000174 .L0 
+     /tmp/ccnkn6oc.s:259    .text:0000000000000178 .L0 
+     /tmp/ccnkn6oc.s:260    .text:0000000000000178 .L0 
+     /tmp/ccnkn6oc.s:262    .text:000000000000017c .L0 
+     /tmp/ccnkn6oc.s:266    .text:0000000000000180 .L0 
+     /tmp/ccnkn6oc.s:267    .text:0000000000000180 .L0 
+     /tmp/ccnkn6oc.s:268    .text:0000000000000180 .L0 
+     /tmp/ccnkn6oc.s:270    .text:0000000000000188 .L0 
+     /tmp/ccnkn6oc.s:272    .text:000000000000018c .L0 
+     /tmp/ccnkn6oc.s:273    .text:000000000000018c .L0 
+     /tmp/ccnkn6oc.s:275    .text:0000000000000190 .L0 
+     /tmp/ccnkn6oc.s:276    .text:0000000000000190 .L0 
+     /tmp/ccnkn6oc.s:279    .text:0000000000000198 .L0 
+     /tmp/ccnkn6oc.s:280    .text:0000000000000198 .L0 
+     /tmp/ccnkn6oc.s:284    .text:00000000000001a0 .L0 
+     /tmp/ccnkn6oc.s:286    .text:00000000000001a4 .L0 
+     /tmp/ccnkn6oc.s:289    .text:00000000000001a8 .L0 
+     /tmp/ccnkn6oc.s:291    .text:00000000000001ac .L0 
+     /tmp/ccnkn6oc.s:292    .text:00000000000001ac .L0 
+     /tmp/ccnkn6oc.s:294    .text:00000000000001b0 .L0 
+     /tmp/ccnkn6oc.s:296    .text:00000000000001b4 .L0 
+     /tmp/ccnkn6oc.s:298    .text:00000000000001b8 .L0 
+     /tmp/ccnkn6oc.s:300    .text:00000000000001bc .L0 
+     /tmp/ccnkn6oc.s:301    .text:00000000000001bc .L0 
+     /tmp/ccnkn6oc.s:303    .text:00000000000001c0 .L0 
+     /tmp/ccnkn6oc.s:305    .text:00000000000001c4 .L0 
+     /tmp/ccnkn6oc.s:307    .text:00000000000001c8 .L0 
+     /tmp/ccnkn6oc.s:309    .text:00000000000001cc .L0 
+     /tmp/ccnkn6oc.s:310    .text:00000000000001cc .L0 
+     /tmp/ccnkn6oc.s:312    .text:00000000000001d0 .L0 
+     /tmp/ccnkn6oc.s:318    .text:00000000000001dc .L0 
+     /tmp/ccnkn6oc.s:319    .text:00000000000001dc .L0 
+     /tmp/ccnkn6oc.s:321    .text:00000000000001e0 .L0 
+     /tmp/ccnkn6oc.s:326    .text:00000000000001ec .L0 
+     /tmp/ccnkn6oc.s:328    .text:00000000000001f0 .L0 
+     /tmp/ccnkn6oc.s:331    .text:00000000000001f4 .L0 
+     /tmp/ccnkn6oc.s:333    .text:00000000000001f8 .L0 
+     /tmp/ccnkn6oc.s:337    .text:00000000000001fc .L0 
+     /tmp/ccnkn6oc.s:338    .text:00000000000001fc .L0 
+     /tmp/ccnkn6oc.s:339    .text:00000000000001fc .L0 
+     /tmp/ccnkn6oc.s:341    .text:0000000000000200 .L0 
+     /tmp/ccnkn6oc.s:342    .text:0000000000000200 .L0 
+     /tmp/ccnkn6oc.s:347    .text:0000000000000208 .L0 
+     /tmp/ccnkn6oc.s:353    .text:0000000000000210 .L0 
+     /tmp/ccnkn6oc.s:357    .text:0000000000000214 .L0 
+     /tmp/ccnkn6oc.s:358    .text:0000000000000218 .L0 
+     /tmp/ccnkn6oc.s:359    .text:0000000000000218 .L0 
+     /tmp/ccnkn6oc.s:361    .text:000000000000021c .L0 
+     /tmp/ccnkn6oc.s:363    .text:0000000000000220 .L0 
+     /tmp/ccnkn6oc.s:377    .bss:0000000000000008 _ZN15MemoryAllocator9firstUsedE
+     /tmp/ccnkn6oc.s:373    .bss:0000000000000000 _ZN15MemoryAllocator9firstFreeE
+     /tmp/ccnkn6oc.s:370    .bss:0000000000000000 .LANCHOR0
+     /tmp/ccnkn6oc.s:383    .text:0000000000000220 .L0 
+     /tmp/ccnkn6oc.s:29     .text:000000000000000c .L0 
+     /tmp/ccnkn6oc.s:35     .text:0000000000000018 .L0 
+GAS LISTING /tmp/ccnkn6oc.s 			page 14
+
+
+     /tmp/ccnkn6oc.s:76     .text:0000000000000058 .L0 
+     /tmp/ccnkn6oc.s:78     .text:0000000000000064 .L0 
+     /tmp/ccnkn6oc.s:82     .text:0000000000000070 .L0 
+     /tmp/ccnkn6oc.s:152    .text:00000000000000e8 .L0 
+     /tmp/ccnkn6oc.s:195    .text:000000000000011c .L0 
+     /tmp/ccnkn6oc.s:200    .text:0000000000000128 .L0 
+     /tmp/ccnkn6oc.s:241    .text:0000000000000158 .L0 
+     /tmp/ccnkn6oc.s:268    .text:0000000000000180 .L0 
+     /tmp/ccnkn6oc.s:276    .text:0000000000000190 .L0 
+     /tmp/ccnkn6oc.s:280    .text:0000000000000198 .L0 
+     /tmp/ccnkn6oc.s:321    .text:00000000000001e0 .L0 
+     /tmp/ccnkn6oc.s:73     .text:0000000000000058 .L16
+     /tmp/ccnkn6oc.s:98     .text:0000000000000098 .L13
+     /tmp/ccnkn6oc.s:103    .text:00000000000000a0 .L4
+     /tmp/ccnkn6oc.s:55     .text:0000000000000040 .L5
+     /tmp/ccnkn6oc.s:32     .text:0000000000000018 .L2
+     /tmp/ccnkn6oc.s:43     .text:000000000000002c .L3
+     /tmp/ccnkn6oc.s:181    .text:0000000000000110 .L1
+     /tmp/ccnkn6oc.s:114    .text:00000000000000b0 .L8
+     /tmp/ccnkn6oc.s:123    .text:00000000000000c0 .L7
+     /tmp/ccnkn6oc.s:110    .text:00000000000000ac .L14
+     /tmp/ccnkn6oc.s:191    .text:000000000000011c .L9
+     /tmp/ccnkn6oc.s:197    .text:0000000000000128 .L17
+     /tmp/ccnkn6oc.s:155    .text:00000000000000f4 .L11
+     /tmp/ccnkn6oc.s:135    .text:00000000000000d0 .L10
+     /tmp/ccnkn6oc.s:176    .text:000000000000010c .L12
+     /tmp/ccnkn6oc.s:316    .text:00000000000001dc .L31
+     /tmp/ccnkn6oc.s:255    .text:0000000000000174 .L21
+     /tmp/ccnkn6oc.s:244    .text:0000000000000164 .L19
+     /tmp/ccnkn6oc.s:345    .text:0000000000000208 .L28
+     /tmp/ccnkn6oc.s:324    .text:00000000000001ec .L23
+     /tmp/ccnkn6oc.s:351    .text:0000000000000210 .L29
+     /tmp/ccnkn6oc.s:282    .text:00000000000001a0 .L26
+     /tmp/ccnkn6oc.s:264    .text:0000000000000180 .L20
+     /tmp/ccnkn6oc.s:334    .text:00000000000001fc .L25
+     /tmp/ccnkn6oc.s:277    .text:0000000000000198 .L24
+     /tmp/ccnkn6oc.s:355    .text:0000000000000214 .L22
+     /tmp/ccnkn6oc.s:697    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccnkn6oc.s:1347   .debug_str:0000000000000133 .LASF29
+     /tmp/ccnkn6oc.s:1359   .debug_str:0000000000000244 .LASF30
+     /tmp/ccnkn6oc.s:1361   .debug_str:000000000000025c .LASF31
+     /tmp/ccnkn6oc.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccnkn6oc.s:380    .text:0000000000000220 .Letext0
+     /tmp/ccnkn6oc.s:1307   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccnkn6oc.s:1349   .debug_str:00000000000001f7 .LASF0
+     /tmp/ccnkn6oc.s:1341   .debug_str:00000000000000f4 .LASF1
+     /tmp/ccnkn6oc.s:1337   .debug_str:00000000000000d4 .LASF2
+     /tmp/ccnkn6oc.s:1325   .debug_str:000000000000006c .LASF4
+     /tmp/ccnkn6oc.s:1339   .debug_str:00000000000000e2 .LASF3
+     /tmp/ccnkn6oc.s:1313   .debug_str:0000000000000023 .LASF5
+     /tmp/ccnkn6oc.s:1309   .debug_str:0000000000000000 .LASF6
+     /tmp/ccnkn6oc.s:1331   .debug_str:0000000000000091 .LASF7
+     /tmp/ccnkn6oc.s:1355   .debug_str:000000000000021e .LASF8
+     /tmp/ccnkn6oc.s:1323   .debug_str:000000000000005e .LASF9
+     /tmp/ccnkn6oc.s:1383   .debug_str:00000000000002ec .LASF10
+     /tmp/ccnkn6oc.s:1333   .debug_str:00000000000000a4 .LASF11
+     /tmp/ccnkn6oc.s:1371   .debug_str:00000000000002b4 .LASF12
+GAS LISTING /tmp/ccnkn6oc.s 			page 15
+
+
+     /tmp/ccnkn6oc.s:1353   .debug_str:000000000000020e .LASF13
+     /tmp/ccnkn6oc.s:1343   .debug_str:0000000000000107 .LASF14
+     /tmp/ccnkn6oc.s:1327   .debug_str:0000000000000073 .LASF15
+     /tmp/ccnkn6oc.s:1357   .debug_str:000000000000022e .LASF16
+     /tmp/ccnkn6oc.s:1367   .debug_str:000000000000028b .LASF32
+     /tmp/ccnkn6oc.s:1379   .debug_str:00000000000002dc .LASF17
+     /tmp/ccnkn6oc.s:1315   .debug_str:000000000000002a .LASF18
+     /tmp/ccnkn6oc.s:1373   .debug_str:00000000000002c4 .LASF19
+     /tmp/ccnkn6oc.s:1311   .debug_str:0000000000000013 .LASF33
+     /tmp/ccnkn6oc.s:1351   .debug_str:0000000000000204 .LASF20
+     /tmp/ccnkn6oc.s:1321   .debug_str:0000000000000054 .LASF21
+     /tmp/ccnkn6oc.s:1375   .debug_str:00000000000002cc .LASF34
+     /tmp/ccnkn6oc.s:1369   .debug_str:0000000000000293 .LASF35
+     /tmp/ccnkn6oc.s:1363   .debug_str:000000000000027a .LASF36
+     /tmp/ccnkn6oc.s:1335   .debug_str:00000000000000b3 .LASF37
+     /tmp/ccnkn6oc.s:1319   .debug_str:0000000000000034 .LASF22
+     /tmp/ccnkn6oc.s:1345   .debug_str:0000000000000113 .LASF23
+     /tmp/ccnkn6oc.s:221    .text:0000000000000144 .LFB1
+     /tmp/ccnkn6oc.s:364    .text:0000000000000220 .LFE1
+     /tmp/ccnkn6oc.s:1094   .debug_loc:0000000000000000 .LLST6
+     /tmp/ccnkn6oc.s:1317   .debug_str:000000000000002f .LASF24
+     /tmp/ccnkn6oc.s:1126   .debug_loc:0000000000000078 .LLST7
+     /tmp/ccnkn6oc.s:1157   .debug_loc:000000000000010d .LLST8
+     /tmp/ccnkn6oc.s:1329   .debug_str:0000000000000089 .LASF25
+     /tmp/ccnkn6oc.s:1164   .debug_loc:0000000000000130 .LLST9
+     /tmp/ccnkn6oc.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccnkn6oc.s:215    .text:0000000000000144 .LFE0
+     /tmp/ccnkn6oc.s:1179   .debug_loc:0000000000000179 .LLST0
+     /tmp/ccnkn6oc.s:1204   .debug_loc:00000000000001db .LLST1
+     /tmp/ccnkn6oc.s:1377   .debug_str:00000000000002d6 .LASF26
+     /tmp/ccnkn6oc.s:1227   .debug_loc:000000000000024a .LLST2
+     /tmp/ccnkn6oc.s:1365   .debug_str:0000000000000283 .LASF27
+     /tmp/ccnkn6oc.s:1246   .debug_loc:00000000000002a6 .LLST3
+     /tmp/ccnkn6oc.s:1267   .debug_loc:0000000000000304 .LLST4
+     /tmp/ccnkn6oc.s:1381   .debug_str:00000000000002e1 .LASF28
+     /tmp/ccnkn6oc.s:1283   .debug_loc:000000000000034e .LLST5
+     /tmp/ccnkn6oc.s:224    .text:0000000000000144 .LVL20
+     /tmp/ccnkn6oc.s:237    .text:0000000000000154 .LVL21
+     /tmp/ccnkn6oc.s:348    .text:000000000000020c .LVL32
+     /tmp/ccnkn6oc.s:350    .text:0000000000000210 .LVL33
+     /tmp/ccnkn6oc.s:354    .text:0000000000000214 .LVL34
+     /tmp/ccnkn6oc.s:245    .text:0000000000000164 .LVL22
+     /tmp/ccnkn6oc.s:250    .text:000000000000016c .LVL23
+     /tmp/ccnkn6oc.s:263    .text:0000000000000180 .LVL24
+     /tmp/ccnkn6oc.s:281    .text:00000000000001a0 .LVL25
+     /tmp/ccnkn6oc.s:287    .text:00000000000001a8 .LVL26
+     /tmp/ccnkn6oc.s:315    .text:00000000000001dc .LVL27
+     /tmp/ccnkn6oc.s:323    .text:00000000000001ec .LVL28
+     /tmp/ccnkn6oc.s:329    .text:00000000000001f4 .LVL29
+     /tmp/ccnkn6oc.s:344    .text:0000000000000208 .LVL31
+     /tmp/ccnkn6oc.s:336    .text:00000000000001fc .LVL30
+     /tmp/ccnkn6oc.s:14     .text:0000000000000000 .LVL0
+     /tmp/ccnkn6oc.s:54     .text:0000000000000040 .LVL4
+     /tmp/ccnkn6oc.s:72     .text:0000000000000058 .LVL6
+     /tmp/ccnkn6oc.s:102    .text:00000000000000a0 .LVL8
+     /tmp/ccnkn6oc.s:36     .text:0000000000000020 .LVL2
+     /tmp/ccnkn6oc.s:97     .text:0000000000000098 .LVL7
+GAS LISTING /tmp/ccnkn6oc.s 			page 16
+
+
+     /tmp/ccnkn6oc.s:175    .text:000000000000010c .LVL15
+     /tmp/ccnkn6oc.s:190    .text:000000000000011c .LVL17
+     /tmp/ccnkn6oc.s:208    .text:000000000000013c .LVL18
+     /tmp/ccnkn6oc.s:109    .text:00000000000000ac .LVL9
+     /tmp/ccnkn6oc.s:156    .text:00000000000000f4 .LVL12
+     /tmp/ccnkn6oc.s:161    .text:00000000000000fc .LVL13
+     /tmp/ccnkn6oc.s:180    .text:0000000000000110 .LVL16
+     /tmp/ccnkn6oc.s:24     .text:000000000000000c .LVL1
+     /tmp/ccnkn6oc.s:165    .text:0000000000000100 .LVL14
+     /tmp/ccnkn6oc.s:212    .text:0000000000000140 .LVL19
+     /tmp/ccnkn6oc.s:129    .text:00000000000000c8 .LVL11
+     /tmp/ccnkn6oc.s:51     .text:000000000000003c .LVL3
+     /tmp/ccnkn6oc.s:384    .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+HEAP_START_ADDR
+HEAP_END_ADDR
