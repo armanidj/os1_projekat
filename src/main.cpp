@@ -25,11 +25,6 @@ int main() {
 
     TCB::running = new TCB(0, 0, 0);
 
-    //thread_t thr;
-    //thread_create(&thr, userMainExecutor, nullptr);
-
-//    while(!finished) thread_dispatch();
-
     userMain();
 
     *(int*)0x100000 = 0x5555;

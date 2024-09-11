@@ -25,10 +25,8 @@ protected:
     virtual void run() {};
 
 private:
-    static void runWrapper(void* thread) {
-        if(thread) {
-            ((Thread*)thread)->run();
-        }
+    static void runWrapper(void* thread_p) {
+        ((Thread*)thread_p)->run();
     }
     thread_t myHandle;
     void (*body)(void*);

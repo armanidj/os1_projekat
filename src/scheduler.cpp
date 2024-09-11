@@ -8,11 +8,6 @@
 List Scheduler::queue;
 
 TCB* Scheduler::get(){
-//    TCB* curr = 0;
-//    while (!(queue.peekFront() -> getActive())) {
-//        curr = queue.popFront();
-//        queue.addRear(curr);
-//    }
     return queue.popFront();
 }
 
