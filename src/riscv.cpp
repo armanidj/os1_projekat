@@ -4,7 +4,6 @@
 
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
-#include "../lib/mem.h"
 #include "../h/MemoryAllocator.h"
 #include "../h/syscall_c.hpp"
 #include "../h/tcb.hpp"

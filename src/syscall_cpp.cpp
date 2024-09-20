@@ -25,7 +25,7 @@ void operator delete[](void *p) noexcept
     mem_free(p);
 }
 
-Thread::Thread(void (*body)(void *), void *arg) : body(body), arg(arg){
+Thread::Thread(void (*body)(void *), void *arg) : body(body), arg(arg) {
 }
 
 

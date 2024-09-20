@@ -12,8 +12,7 @@ TCB *TCB::createThread(Body body, void* arg, char* stack) {
     return new TCB(body, arg, stack);
 }
 
-void TCB::dispatch()
-{
+void TCB::dispatch() {
     TCB* old = running;
     if(!old->getFinished() && old->getActive()) {Scheduler::put(old);}
     running = Scheduler::get();

@@ -34,8 +34,7 @@ void Sem::sem_signal() {
 
 int Sem::sem_trywait() {
     val--;
-    if (val < 0)
-    {
+    if (val < 0) {
         val++;
         return 1;
     }

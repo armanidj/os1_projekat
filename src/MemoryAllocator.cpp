@@ -4,8 +4,6 @@
 
 #include "../h/MemoryAllocator.h"
 
-#include "../lib/mem.h"
-
 MemMeta* MemoryAllocator::firstFree = nullptr;
 MemMeta* MemoryAllocator::firstUsed = nullptr;
 
@@ -28,14 +26,14 @@ void *MemoryAllocator::mem_alloc(size_t size) {
     actualSize = size + (size % MEM_BLOCK_SIZE ? 1 : 0) * (MEM_BLOCK_SIZE - size % MEM_BLOCK_SIZE);
 
     while (curr != nullptr) {
-        if (curr->size > (actualSize + sizeof(MemMeta))) break; //nasli smo dovoljno veliki blok. jej!
+        if (curr->size > (actualSize + sizeof(MemMeta))) break; //nasli smo dovoljno veliki blok
         curr = (MemMeta*)curr->next;
     }
 
     if (curr == nullptr) return nullptr;
 
 
-    for(curr2 = firstFree; curr != firstFree && curr2->next != curr && curr2->next != 0; curr2 = (MemMeta*)curr2->next);
+    for(curr2 = firstFree; curr != firstFree && curr2->next != curr && curr2->next != nullptr; curr2 = (MemMeta*)curr2->next);
     newFree = (MemMeta*)((size_t)curr + actualSize + sizeof(MemMeta));
     if (curr2 != firstFree) curr2->next = newFree;
     else firstFree = newFree;
@@ -71,7 +69,7 @@ int MemoryAllocator::mem_free (void* ptr) {
         firstUsed = (MemMeta*)firstUsed->next;
     }
     else {
-        for (curr = firstUsed; curr->next != (void*)((size_t)ptr - sizeof(MemMeta)) && curr->next != 0; curr = (MemMeta*)curr->next);
+        for (curr = firstUsed; curr->next != (void*)((size_t)ptr - sizeof(MemMeta)) && curr->next != nullptr; curr = (MemMeta*)curr->next);
         if (curr->next == nullptr) return -1;
         curr->next = ((MemMeta*)((size_t)ptr - sizeof(MemMeta)))->next;
     } // vrsi prelancavanje USED liste
@@ -84,7 +82,7 @@ int MemoryAllocator::mem_free (void* ptr) {
     }
 
     else {
-        for (curr = firstFree; (size_t)curr->next < ((size_t)ptr - sizeof(MemMeta)) && curr->next != 0; curr = (MemMeta*)curr->next);
+        for (curr = firstFree; (size_t)curr->next < ((size_t)ptr - sizeof(MemMeta)) && curr->next != nullptr; curr = (MemMeta*)curr->next);
         tmp = curr->next;
         curr->next = newFree;
         newFree->next = tmp;
